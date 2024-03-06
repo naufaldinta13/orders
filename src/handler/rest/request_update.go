@@ -40,28 +40,33 @@ func (r *updateRequest) Validate() *validate.Response {
 		}
 	}
 
+	if r.PickupAt != "" {
+		if r.PickupDate, e = bloc.ValidDate(r.PickupAt); e != nil {
+			v.SetError("pickup_at.invalid", "format tanggal tidak valid.")
+		}
+	}
+
+	if r.DropoffAt != "" {
+		if r.DropoffDate, e = bloc.ValidDate(r.PickupAt); e != nil {
+			v.SetError("dropoff_at.invalid", "format tanggal tidak valid.")
+		}
+	}
+
 	return v
 }
 
 func (r *updateRequest) Messages() map[string]string {
-	return map[string]string{
-		"car_id.required":           "kendaraan harus diisi.",
-		"pickup_at.required":        "tanggal pickup harus diisi.",
-		"pickup_location.required":  "lokasi pickup harus diisi.",
-		"dropoff_at.required":       "tanggal dropoff harus diisi.",
-		"dropoff_location.required": "lokasi dropoff harus diisi.",
-	}
+	return map[string]string{}
 }
 
 func (r *updateRequest) Execute() (m *entity.Orders, e error) {
 	m = &entity.Orders{
-		OrderID:         r.Orders.OrderID,
+		ID:              r.Orders.ID,
 		Car:             r.Car,
 		PickupDate:      r.PickupDate,
 		PickupLocation:  r.PickupLocation,
 		DropoffDate:     r.DropoffDate,
 		DropoffLocation: r.DropoffLocation,
-		IsDeleted:       false,
 	}
 
 	if _, e = orm.NewOrm().Update(m, "pickup_date", "pickup_location", "dropoff_date", "dropoff_location"); e != nil {

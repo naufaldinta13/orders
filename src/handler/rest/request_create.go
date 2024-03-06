@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"fmt"
 	"time"
 
 	entityCar "github.com/naufaldinta13/cars/entity"
@@ -34,17 +35,23 @@ func (r *createRequest) Validate() *validate.Response {
 		}
 	}
 
+	if r.PickupAt != "" {
+		if r.PickupDate, e = bloc.ValidDate(r.PickupAt); e != nil {
+			v.SetError("pickup_at.invalid", "format tanggal tidak valid.")
+		}
+	}
+
+	if r.DropoffAt != "" {
+		if r.DropoffDate, e = bloc.ValidDate(r.PickupAt); e != nil {
+			v.SetError("dropoff_at.invalid", "format tanggal tidak valid.")
+		}
+	}
+
 	return v
 }
 
 func (r *createRequest) Messages() map[string]string {
-	return map[string]string{
-		"car_id.required":           "kendaraan harus diisi.",
-		"pickup_at.required":        "tanggal pickup harus diisi.",
-		"pickup_location.required":  "lokasi pickup harus diisi.",
-		"dropoff_at.required":       "tanggal dropoff harus diisi.",
-		"dropoff_location.required": "lokasi dropoff harus diisi.",
-	}
+	return map[string]string{}
 }
 
 func (r *createRequest) Execute() (m *entity.Orders, e error) {
@@ -55,10 +62,10 @@ func (r *createRequest) Execute() (m *entity.Orders, e error) {
 		PickupLocation:  r.PickupLocation,
 		DropoffDate:     r.DropoffDate,
 		DropoffLocation: r.DropoffLocation,
-		IsDeleted:       false,
 	}
 
-	if m.OrderID, e = orm.NewOrm().Insert(m); e != nil {
+	if m.ID, e = orm.NewOrm().Insert(m); e != nil {
+		fmt.Println("===============", e)
 		return
 	}
 

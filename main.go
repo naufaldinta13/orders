@@ -3,13 +3,18 @@ package main
 import (
 	"os"
 
+	entityCars "github.com/naufaldinta13/cars/entity"
+	"github.com/naufaldinta13/orders/entity"
 	"github.com/naufaldinta13/orders/src"
 
 	"github.com/env-io/factory"
 	"github.com/env-io/factory/grpc"
 	"github.com/env-io/factory/rest"
 	"github.com/env-io/factory/sql"
+	"github.com/env-io/orm"
 	"github.com/joho/godotenv"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 func init() {
@@ -48,12 +53,17 @@ func initMysqlConnection() {
 	c := &sql.Config{
 		Server:     os.Getenv("MYSQL_SERVER"),
 		Username:   os.Getenv("MYSQL_USERNAME"),
-		Password:   os.Getenv("MSQYL_PASSWORD"),
+		Password:   os.Getenv("MYSQL_PASSWORD"),
 		Database:   os.Getenv("MYSQL_DATABASE"),
 		Datasource: os.Getenv("MYSQL_DATASOURCE"),
+		DriverType: orm.DRMySQL,
+		DriverName: "mysql",
 	}
 
-	if e := sql.NewConnection(c, nil); e != nil {
+	if e := sql.NewConnection(c, func() {
+		orm.RegisterModel(new(entity.Orders))
+		orm.RegisterModel(new(entityCars.Cars))
+	}); e != nil {
 		factory.Logger.Error(e.Error())
 	}
 }

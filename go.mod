@@ -6,6 +6,7 @@ require (
 	github.com/env-io/factory v1.3.12
 	github.com/env-io/orm v0.0.2
 	github.com/env-io/validate v1.0.2
+	github.com/go-sql-driver/mysql v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.6.1
 	github.com/naufaldinta13/cars v0.0.0-20240302045358-f3e348bcdd3d
