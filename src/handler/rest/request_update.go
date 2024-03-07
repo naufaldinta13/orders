@@ -47,8 +47,14 @@ func (r *updateRequest) Validate() *validate.Response {
 	}
 
 	if r.DropoffAt != "" {
-		if r.DropoffDate, e = bloc.ValidDate(r.PickupAt); e != nil {
+		if r.DropoffDate, e = bloc.ValidDate(r.DropoffAt); e != nil {
 			v.SetError("dropoff_at.invalid", "format tanggal tidak valid.")
+		}
+	}
+
+	if !r.PickupDate.IsZero() && !r.DropoffDate.IsZero() {
+		if r.PickupDate.After(r.DropoffDate) {
+			v.SetError("pickup_at.invalid", "pickup tidak boleh lebih dari drop date")
 		}
 	}
 

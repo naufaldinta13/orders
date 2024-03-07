@@ -11,6 +11,7 @@ func RegisterHandler(e *echo.Echo) {
 	e.POST("/", HandlerCreate)
 	e.PUT("/:id", HandlerUpdate)
 	e.DELETE("/:id", HandlerDelete)
+	e.POST("/sorting-array", HandlerSorting)
 }
 
 // HandlerList
@@ -64,6 +65,25 @@ func HandlerShow(c echo.Context) (e error) {
 // @Router / [post]
 func HandlerCreate(c echo.Context) (e error) {
 	var req createRequest
+	var res interface{}
+
+	if e = c.Bind(&req); e == nil {
+		res, e = req.Execute()
+	}
+
+	return rest.Response(c, res, e)
+}
+
+// HandlerCreate
+// @Summary create new order
+// @Accept json
+// @Produce json
+// @Param request body createRequest true "json request"
+// @Success 200 {object} rest.ResponseBody
+// @Failure default {object} echo.HTTPError
+// @Router / [post]
+func HandlerSorting(c echo.Context) (e error) {
+	var req sortingRequest
 	var res interface{}
 
 	if e = c.Bind(&req); e == nil {
